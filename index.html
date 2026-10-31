@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>برنامج كاشير ومحاسبة للمحلات | إدارة نقطة البيع POS</title>
+<meta name="description" content="برنامج كاشير ومخازن وحسابات بيشتغل من غير إنترنت، متوافق مع الفاتورة الإلكترونية في مصر. اطلب نسخة تجريبية.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f1e7; --surface:#fffdf8; --ink:#1d2320; --muted:#5d6661; --line:#ddd5c4;
+  --brand:#0f6b4f; --brand-ink:#ffffff; --accent:#d9822b; --soft:#e6efe8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131815; --surface:#1b221e; --ink:#eef2ee; --muted:#a2ada6; --line:#2d3731;
+    --brand:#3fbf91; --brand-ink:#0b1410; --accent:#f0a34f; --soft:#1f2c25;
+  }
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:"IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.8;font-size:17px}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:auto;padding:0 20px}
+section{padding:72px 0}
+h1,h2,h3{line-height:1.35}
+h2{font-size:clamp(26px,4vw,38px);margin-bottom:10px}
+.lead{color:var(--muted);max-width:640px;margin-bottom:36px}
+.btn{display:inline-block;background:var(--brand);color:var(--brand-ink);padding:13px 26px;border-radius:10px;font-weight:700;border:0;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:700;font-size:20px}.logo b{color:var(--brand)}
+nav{display:flex;gap:22px;font-size:15px}
+nav a:hover{color:var(--brand)}
+@media(max-width:760px){nav{display:none}}
+
+/* hero */
+.hero{padding:64px 0 48px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.tag{display:inline-block;background:var(--soft);color:var(--brand);padding:4px 14px;border-radius:99px;font-size:14px;font-weight:500;margin-bottom:16px}
+.hero h1{font-size:clamp(32px,5.4vw,56px);margin-bottom:16px}
+.hero h1 em{font-style:normal;color:var(--brand);background:linear-gradient(transparent 62%,color-mix(in srgb,var(--accent) 40%,transparent) 62%)}
+.hero p{color:var(--muted);font-size:19px;margin-bottom:26px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.receipt{background:#fffefa;color:#1d2320;font-family:"Courier New",monospace;font-size:14px;padding:22px 22px 30px;max-width:340px;margin:auto;box-shadow:0 18px 40px rgba(0,0,0,.18);transform:rotate(-2deg);
+  -webkit-mask:radial-gradient(7px at 50% 100%,#0000 98%,#000) bottom/14px 51% repeat-x,linear-gradient(#000 0 0) top/100% 52% no-repeat;
+  mask:radial-gradient(7px at 50% 100%,#0000 98%,#000) bottom/14px 51% repeat-x,linear-gradient(#000 0 0) top/100% 52% no-repeat}
+.receipt h4{text-align:center;font-family:inherit;font-size:16px;margin-bottom:2px}
+.receipt .c{text-align:center;color:#6b7570;font-size:12px;margin-bottom:10px}
+.receipt .r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed #cfc8b8}
+.receipt .t{font-weight:700;font-size:17px;border:0;padding-top:10px}
+.receipt .qr{width:54px;height:54px;margin:12px auto 0;background:
+  conic-gradient(#1d2320 25%,#fff 0 50%,#1d2320 0 75%,#fff 0) 0 0/14px 14px;border:3px solid #1d2320}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}}
+
+/* stats */
+.stats{padding:0}
+.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.stat{padding:22px;text-align:center;border-inline-start:1px solid var(--line)}
+.stat:first-child{border:0}
+.stat b{display:block;font-size:28px;color:var(--brand)}
+.stat span{color:var(--muted);font-size:14px}
+@media(max-width:700px){.stats .wrap{grid-template-columns:1fr 1fr}.stat:nth-child(3){border-inline-start:0}.stat:nth-child(n+3){border-top:1px solid var(--line)}}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+.card .ic{font-size:28px;display:block;margin-bottom:8px}
+.card h3{font-size:19px;margin-bottom:6px}
+.card p{color:var(--muted);font-size:15.5px}
+.alt{background:var(--soft)}
+.alt .card{background:var(--surface)}
+
+/* roles + shortcuts */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:800px){.two{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15px}
+th,td{padding:11px 14px;text-align:start;border-bottom:1px solid var(--line)}
+th{background:var(--soft);color:var(--brand)}
+tr:last-child td{border:0}
+kbd{background:var(--ink);color:var(--bg);padding:1px 9px;border-radius:6px;font-family:monospace;font-size:14px}
+.list{list-style:none;padding:0;display:grid;gap:10px}
+.list li{padding-inline-start:28px;position:relative}
+.list li::before{content:"✓";position:absolute;inset-inline-start:0;color:var(--brand);font-weight:700}
+
+/* booking */
+.book{background:var(--brand);color:var(--brand-ink)}
+.book .lead{color:inherit;opacity:.85}
+.book .box{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;align-items:start}
+@media(max-width:860px){.book .box{grid-template-columns:1fr}}
+form{background:var(--surface);color:var(--ink);padding:28px;border-radius:16px;display:grid;gap:14px}
+label{font-size:14.5px;font-weight:500;display:block;margin-bottom:4px}
+input,select,textarea{width:100%;font:inherit;padding:11px 13px;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);border-color:transparent}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.err{color:#c0392b;font-size:13px;display:none}
+.invalid+.err{display:block}.invalid{border-color:#c0392b}
+.wa{background:#25d366;color:#06310f;font-size:18px;padding:14px;border-radius:10px;width:100%}
+.note{font-size:13px;color:var(--muted);text-align:center}
+.steps{list-style:none;padding:0;display:grid;gap:14px;counter-reset:s}
+.steps li{counter-increment:s;padding-inline-start:46px;position:relative}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--brand-ink);color:var(--brand);display:grid;place-items:center;font-weight:700}
+
+footer{padding:34px 0;text-align:center;color:var(--muted);font-size:14px}
+footer a{color:var(--brand);font-weight:500}
+.fab{position:fixed;bottom:18px;inset-inline-start:18px;background:#25d366;color:#06310f;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:28px;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:20}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a href="#top" class="logo">كاشير<b>برو</b></a>
+    <nav>
+      <a href="#about">عن البرنامج</a>
+      <a href="#features">المميزات</a>
+      <a href="#roles">الصلاحيات</a>
+      <a href="#trust">الأمان والضرايب</a>
+      <a href="#trial">النسخة التجريبية</a>
+    </nav>
+    <a href="#book" class="btn" style="padding:8px 18px">احجز دلوقتي</a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="tag">برنامج نقطة بيع ومحاسبة متكامل</span>
+      <h1>شغّل محلك <em>من الكاشير للحسابات</em> في برنامج واحد</h1>
+      <p>فواتير، مخزن، موردين، عملاء آجل، ورديات، مصروفات وتقارير. وكله شغال حتى لو النت قطع. معمول للسوبر ماركت والصيدلية والمطعم ومحل الملابس والإلكترونيات.</p>
+      <div class="cta">
+        <a href="#book" class="btn">اطلب نسخة تجريبية</a>
+        <a href="#features" class="btn ghost">شوف المميزات</a>
+      </div>
+    </div>
+    <div class="receipt" aria-hidden="true">
+      <h4>سوبر ماركت النور</h4>
+      <div class="c">فاتورة رقم 000184 — نسخة تجريبية</div>
+      <div class="r"><span>لبن كامل الدسم × 2</span><span>56.00</span></div>
+      <div class="r"><span>أرز مصري 1كجم</span><span>38.50</span></div>
+      <div class="r"><span>زيت عباد الشمس</span><span>92.00</span></div>
+      <div class="r"><span>خصم</span><span>- 6.50</span></div>
+      <div class="r"><span>ضريبة القيمة المضافة</span><span>12.74</span></div>
+      <div class="r t"><span>الإجمالي</span><span>192.74 ج.م</span></div>
+      <div class="qr"></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stat"><b>أوفلاين</b><span>البيع شغال من غير إنترنت</span></div>
+    <div class="stat"><b>5 أدوار</b><span>صلاحيات مظبوطة لكل موظف</span></div>
+    <div class="stat"><b>ETA</b><span>متوافق مع الفاتورة الإلكترونية</span></div>
+    <div class="stat"><b>عربي RTL</b><span>واجهة عربية بالكامل</span></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap two">
+    <div>
+      <h2>إيه هو البرنامج ده؟</h2>
+      <p class="lead" style="margin-bottom:0">برنامج لإدارة البيع بالتجزئة والجملة، بيشتغل على ويندوز وبقاعدة بيانات على جهازك، فمفيش حاجة بتقف لو النت فصل. أول ما النت يرجع، الإيصالات الإلكترونية بتتبعت لمصلحة الضرايب لوحدها. وتقدر تكبّر شغلك على أكتر من فرع وتتابع من الموبايل.</p>
+    </div>
+    <ul class="list">
+      <li>مناسب لأصحاب المحلات والكاشير وأمين المخزن والمحاسب والمدير.</li>
+      <li>بيشتغل على Windows 10/11، وجهاز عادي بمعالج ثنائي ورام 4 جيجا يكفي.</li>
+      <li>بيتوصل بالطابعة الحرارية 58/80 مم وقارئ الباركود ودرج الفلوس والميزان.</li>
+      <li>تفضل فاتورتك مظبوطة: الحفظ ذري، يعني الفاتورة تتسجل كاملة أو متتسجلش خالص.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="features" class="alt">
+  <div class="wrap">
+    <h2>مميزات تفرق في شغلك اليومي</h2>
+    <p class="lead">كل حاجة المحل محتاجها في مكان واحد.</p>
+    <div class="grid">
+      <div class="card"><span class="ic">🧾</span><h3>كاشير سريع</h3><p>بيع بالباركود أو البحث أو أزرار الأصناف السريعة. خصومات، أكتر من قائمة أسعار، وتعليق الفاتورة واسترجاعها.</p></div>
+      <div class="card"><span class="ic">💳</span><h3>دفع متعدد</h3><p>كاش وكارت ومحفظة وآجل، وتقدر تقسّم الفاتورة على أكتر من طريقة. والباقي بيتحسب والدرج بيفتح لوحده.</p></div>
+      <div class="card"><span class="ic">📦</span><h3>مخزن بتحكم كامل</h3><p>أصناف بمتغيرات (مقاس ولون)، وحدات متعددة، تتبع الدفعات وتاريخ الصلاحية، وأرقام تسلسلية للضمان.</p></div>
+      <div class="card"><span class="ic">🍽️</span><h3>أصناف مركبة ووصفات</h3><p>للمطاعم: بيع الطبق وخصم المكونات تلقائي من المخزن.</p></div>
+      <div class="card"><span class="ic">👥</span><h3>عملاء وآجل</h3><p>حد ائتمان وفترة سداد لكل عميل، كشف حساب، ونقاط ولاء، وإرسال الفاتورة على واتساب.</p></div>
+      <div class="card"><span class="ic">🚚</span><h3>موردين ومشتريات</h3><p>استلام البضاعة، فواتير الشراء، وحسابات الموردين ومتابعة المستحقات.</p></div>
+      <div class="card"><span class="ic">↩️</span><h3>مرتجع واستبدال</h3><p>مرتجع بصلاحية واعتماد المدير، وبيرجّع المخزن والقيود المحاسبية تلقائياً.</p></div>
+      <div class="card"><span class="ic">🕒</span><h3>صندوق وورديات</h3><p>فتح وإغلاق وردية لكل كاشير، وجرد الخزنة ومعرفة العجز والزيادة بدقة.</p></div>
+      <div class="card"><span class="ic">📒</span><h3>حسابات وقيود يومية</h3><p>قيود تلقائية مع كل عملية. المستند المرحّل مبيتحذفش، بيتصحح بقيد عكسي.</p></div>
+      <div class="card"><span class="ic">🏷️</span><h3>عروض وكوبونات</h3><p>خصم صنف، اشترِ 2 وخد 1، كوبونات، وعروض ليها تاريخ بداية ونهاية.</p></div>
+      <div class="card"><span class="ic">📊</span><h3>تقارير إدارية ومالية</h3><p>مبيعات وأرباح ومخزون وضرايب، تشوفها وتطبعها وتصدّرها.</p></div>
+      <div class="card"><span class="ic">💾</span><h3>نسخ احتياطي وتشفير</h3><p>نسخ احتياطي مشفّر، واسترجاع تلقائي لو الكهرباء قطعت وفي فاتورة مفتوحة.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="roles">
+  <div class="wrap two">
+    <div>
+      <h2>كل واحد يشوف شغله بس</h2>
+      <p class="lead">صلاحيات دقيقة على مستوى الشاشة والعملية (عرض، إضافة، تعديل، حذف، طباعة، تصدير)، وكل عملية حساسة مسجلة في سجل تدقيق.</p>
+      <table>
+        <tr><th>الدور</th><th>بيعمل إيه</th></tr>
+        <tr><td>مدير النظام</td><td>كل حاجة، الإعدادات والمستخدمين والنسخ الاحتياطي</td></tr>
+        <tr><td>المحاسب</td><td>الحسابات والقيود والضرايب وإقفال الفترات</td></tr>
+        <tr><td>مدير الفرع</td><td>التقارير والخصومات الكبيرة واعتماد المرتجعات والجرد</td></tr>
+        <tr><td>أمين المخزن</td><td>الأصناف والاستلام والتحويلات والجرد</td></tr>
+        <tr><td>الكاشير</td><td>البيع والتحصيل وتعليق الفاتورة ومرتجع بحدود صلاحيته</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>اختصارات تسرّع الزحمة</h2>
+      <p class="lead">الكاشير بيشتغل بالكيبورد من غير ما يسيب الباركود.</p>
+      <table>
+        <tr><th>الزرار</th><th>الوظيفة</th></tr>
+        <tr><td><kbd>F1</kbd></td><td>بحث عن صنف</td></tr>
+        <tr><td><kbd>F2</kbd></td><td>فاتورة جديدة</td></tr>
+        <tr><td><kbd>F3</kbd> / <kbd>F4</kbd></td><td>تعليق / استرجاع فاتورة</td></tr>
+        <tr><td><kbd>F5</kbd></td><td>اختيار عميل</td></tr>
+        <tr><td><kbd>F8</kbd></td><td>خصم</td></tr>
+        <tr><td><kbd>F9</kbd></td><td>الدفع</td></tr>
+        <tr><td><kbd>F10</kbd></td><td>مرتجع</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="trust" class="alt">
+  <div class="wrap">
+    <h2>أمان وامتثال للقانون المصري</h2>
+    <p class="lead">متظبط على الفاتورة والإيصال الإلكتروني وضريبة القيمة المضافة وحماية البيانات الشخصية.</p>
+    <div class="grid">
+      <div class="card"><span class="ic">🏛️</span><h3>الفاتورة الإلكترونية ETA</h3><p>إرسال مؤجل للإيصالات وقت انقطاع النت، من غير ما إيصال واحد يضيع.</p></div>
+      <div class="card"><span class="ic">🔐</span><h3>أمان عالي</h3><p>كلمات المرور مشفرة، قفل الحساب بعد 5 محاولات غلط، وحماية من حقن SQL.</p></div>
+      <div class="card"><span class="ic">🛡️</span><h3>خصوصية العملاء</h3><p>جمع أقل بيانات لازمة، وموافقة صريحة قبل أي رسالة تسويقية على واتساب.</p></div>
+      <div class="card"><span class="ic">🔒</span><h3>قفل تلقائي</h3><p>الشاشة بتتقفل لما محدش يستخدمها، وكل حركة بتتسجل باسم صاحبها.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="trial">
+  <div class="wrap two">
+    <div>
+      <h2>جرّب قبل ما تشتري</h2>
+      <p class="lead" style="margin-bottom:0">النسخة التجريبية فيها كل الوظائف لمدة من 1 لـ 90 يوم (الافتراضي 14 يوم)، وعليها عدّاد ظاهر. وفي آخر 7 أيام بيجيلك تنبيه قبل النهاية بـ 7 و3 و1 يوم.</p>
+    </div>
+    <ul class="list">
+      <li>لو خلصت المدة وفي وردية مفتوحة: تقدر تقفلها خلال 3 أيام سماح.</li>
+      <li>بعد الانتهاء بيتحول البرنامج لوضع القراءة: تقارير وتصدير ونسخ احتياطي بس.</li>
+      <li>ترخيص سنوي أو دائم، وممكن تحدد عدد المستخدمين والفروع والأجهزة.</li>
+      <li>في التجربة مفيش إيصالات بتتبعت لبيئة الإنتاج عند المصلحة.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="book" class="book">
+  <div class="wrap box">
+    <div>
+      <h2>احجز نسخة تجريبية أو استشارة</h2>
+      <p class="lead">املا البيانات واضغط إرسال، هيفتح معاك واتساب برسالة جاهزة توصلني على طول، وأرد عليك في أقرب وقت.</p>
+      <ol class="steps">
+        <li>اكتب بياناتك ونوع نشاطك</li>
+        <li>اضغط «ابعت على واتساب»</li>
+        <li>الرسالة توصلني وأكلمك نظبط الموعد</li>
+      </ol>
+    </div>
+
+    <form id="bookForm" novalidate>
+      <div class="row">
+        <div>
+          <label for="name">الاسم *</label>
+          <input id="name" name="name" autocomplete="name" placeholder="مثال: محمد أحمد" required>
+          <div class="err">اكتب اسمك من فضلك</div>
+        </div>
+        <div>
+          <label for="phone">رقم الموبايل *</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required>
+          <div class="err">اكتب رقم موبايل صحيح</div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="biz">نوع النشاط *</label>
+          <select id="biz" required>
+            <option value="">اختار…</option>
+            <option>سوبر ماركت</option><option>صيدلية</option><option>محل ملابس</option>
+            <option>مطعم / كافيه</option><option>أدوات منزلية</option><option>إلكترونيات وموبايلات</option><option>نشاط تاني</option>
+          </select>
+          <div class="err">اختار نوع النشاط</div>
+        </div>
+        <div>
+          <label for="branches">عدد الفروع</label>
+          <select id="branches"><option>فرع واحد</option><option>2 – 3 فروع</option><option>أكتر من 3 فروع</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="date">أنسب يوم للتواصل</label>
+          <input id="date" type="date">
+        </div>
+        <div>
+          <label for="time">أنسب وقت</label>
+          <select id="time"><option>صباحاً</option><option>ظهراً</option><option>مساءً</option><option>أي وقت</option></select>
+        </div>
+      </div>
+      <div>
+        <label for="msg">محتاج إيه بالظبط؟ (اختياري)</label>
+        <textarea id="msg" rows="3" placeholder="مثال: عايز برنامج كاشير ومخزن مع طابعة حرارية"></textarea>
+      </div>
+      <button type="submit" class="btn wa">📲 ابعت على واتساب</button>
+      <p class="note">بياناتك بتتبعت مباشرة على واتساب ومش بتتخزن في أي مكان تاني.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    تطوير: <a href="http://www.youtube.com/@a7zanati" target="_blank" rel="noopener">أحمد الزناتي</a> · قناة اليوتيوب · الإصدار 1.0 · © 2026 جميع الحقوق محفوظة
+  </div>
+</footer>
+
+<a class="fab" id="fab" href="#book" aria-label="واتساب">💬</a>
+
+<script>
+// ===== غيّر الرقم ده برقم الواتساب بتاعك (بصيغة دولية بدون + أو 00) =====
+// مثال لرقم مصري 01012345678  →  201012345678
+const WA_NUMBER = "201000000000";
+// =====================================================================
+
+const form = document.getElementById("bookForm");
+const $ = id => document.getElementById(id);
+
+function waLink(text){ return "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(text); }
+$("fab").href = waLink("السلام عليكم، عايز أعرف تفاصيل أكتر عن برنامج الكاشير.");
+$("fab").target = "_blank";
+
+// منع تواريخ قديمة
+$("date").min = new Date().toISOString().split("T")[0];
+
+function check(el, ok){ el.classList.toggle("invalid", !ok); return ok; }
+function isPhone(v){ return /^(\+?20|0)?1[0125]\d{8}$/.test(v.replace(/[\s-]/g,"").replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))); }
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const ok = [
+    check($("name"), $("name").value.trim().length >= 2),
+    check($("phone"), isPhone($("phone").value.trim())),
+    check($("biz"), $("biz").value !== "")
+  ].every(Boolean);
+  if(!ok) return;
+
+  const lines = [
+    "السلام عليكم، عايز أحجز نسخة تجريبية من برنامج الكاشير 👋",
+    "",
+    "👤 الاسم: " + $("name").value.trim(),
+    "📱 الموبايل: " + $("phone").value.trim(),
+    "🏪 النشاط: " + $("biz").value,
+    "🏬 عدد الفروع: " + $("branches").value,
+    "📅 أنسب يوم: " + ($("date").value || "أي يوم"),
+    "⏰ أنسب وقت: " + $("time").value
+  ];
+  if($("msg").value.trim()) lines.push("📝 تفاصيل: " + $("msg").value.trim());
+
+  window.open(waLink(lines.join("\n")), "_blank", "noopener");
+});
+
+["name","phone","biz"].forEach(id => $(id).addEventListener("input", () => $(id).classList.remove("invalid")));
+</script>
+</body>
+</html>
